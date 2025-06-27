@@ -412,8 +412,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 For support and queries:
 
-- Email: support@ecofarmiq.com
-- Documentation: [docs.ecofarmiq.com](https://docs.ecofarmiq.com)
+- Documentation: [docs.ecofarmiq.com](https://docs.ecofarmiq.proghubs.com)
 - Issues: GitHub Issues
 
 ## Acknowledgments
