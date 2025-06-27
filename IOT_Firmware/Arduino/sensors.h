@@ -16,6 +16,20 @@ extern float currentPH;
 extern bool pump1State;
 extern bool pump2State;
 
+// Main sensor handling function
 void handleSensorsAndControls();
+
+// Command handling functions
+void handleCommand(String command);
+void executeCommand(String cmd);
+void handleLEDCommand(String cmd);
+void handleBuzzerCommand(String cmd);
+void handleWaterPumpCommand(String cmd);
+void handleFertilizerPumpCommand(String cmd);
+
+// Sensor reading and data functions
+void readSensors();
+String createSensorJson();
+void updateLCD();
 
 #endif

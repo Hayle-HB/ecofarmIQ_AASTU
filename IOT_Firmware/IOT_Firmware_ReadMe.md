@@ -8,8 +8,9 @@
 graph LR
     A[Sensors] --> B[Arduino Mega]
     B --> C[ESP32]
-    C --> D[WiFi]
-    D --> E[Server]
+    C --> |HTTP| D[Server API]
+    D --> |Commands| C
+    C --> B
     B --> F[Pumps/Actuators]
 ```
 
@@ -25,24 +26,29 @@ graph TD
     end
 
     subgraph Arduino Mega[Arduino Mega Controller]
-        AM[Main Controller] --> |Control| P1
-        AM --> |Control| P2
-        AM --> |Status| LCD
-        AM --> |Serial| ESP
+        AM[Main Controller] --> |JSON| ESP
+        AM --> |Execute Commands| ACT
     end
 
-    subgraph Actuators
-        P1[Water Pump]
-        P2[Fertilizer Pump]
+    subgraph Actuators[Actuators]
+        subgraph ACT[Control Systems]
+            P1[Water Pump]
+            P2[Fertilizer Pump]
+            LED[RGB LED]
+            BUZ[Buzzer]
+        end
         LCD[LCD Display]
     end
 
     subgraph ESP32[ESP32 WiFi Module]
-        ESP[ESP32] --> |HTTP| SRV
+        ESP[ESP32] --> |HTTP POST| API
+        API[Server API] --> |Command Response| ESP
     end
 
     subgraph Server[Cloud Server]
-        SRV[EcoFarmIQ Server]
+        API --> CTRL[Control Logic]
+        CTRL --> |Threshold Analysis| CTRL
+        CTRL --> |Command Generation| API
     end
 ```
 
@@ -52,9 +58,10 @@ graph TD
 sequenceDiagram
     participant S as Sensors
     participant A as Arduino
-    participant P as Pumps
     participant E as ESP32
-    participant Srv as Server
+    participant API as Server API
+    participant C as Control Logic
+    participant P as Pumps
 
     Note over A: System Start
     A->>S: Initialize Sensors
@@ -62,23 +69,25 @@ sequenceDiagram
     A->>E: Initialize Communication
 
     loop Every 500ms
-        S->>A: Send Sensor Data
-        A->>A: Process Data
-        A->>P: Control Pumps
+        S->>A: Read Sensor Data
         A->>E: Send JSON Data
     end
 
     loop Every 5s
-        E->>Srv: POST Sensor Data
-        Srv-->>E: Response
+        E->>API: POST /sensorData
+        API->>C: Process Data
+        C->>API: Generate Commands
+        API-->>E: Response with Commands
+        E->>A: Forward Commands
+        A->>P: Execute Commands
     end
 ```
 
-The EcoFarmIQ Farm system uses a dual-microcontroller architecture for robust farm automation and monitoring:
+The EcoFarmIQ Farm system uses a dual-microcontroller architecture with server-side control logic:
 
-1. **Arduino Mega**: Primary controller handling sensors and actuators
-2. **ESP32**: Secondary controller managing WiFi communication
-3. **Cloud Server**: Remote data storage and monitoring interface
+1. **Arduino Mega**: Primary controller handling sensors and actuator execution
+2. **ESP32**: WiFi communication and API interaction
+3. **Cloud Server**: Control logic and decision making
 
 ## Detailed Component Breakdown
 
@@ -121,10 +130,13 @@ The EcoFarmIQ Farm system uses a dual-microcontroller architecture for robust fa
      - IN1: Pin 30
      - IN2: Pin 31
      - EN: Pin 6 (PWM)
-   - Activation Logic:
-     ```cpp
-     if (moisture < 20%) -> ON @ 90% power
-     if (moisture > 30%) -> OFF
+   - API Control:
+     ```
+     Endpoint: /api/sensorCommand/water-pump
+     Commands:
+     - ON: Activate pump at default power (90%)
+     - OFF: Deactivate pump
+     - SPEED,value: Set pump power (0-100%)
      ```
 
 2. **Fertilizer Pump (Motor 2)**
@@ -132,10 +144,13 @@ The EcoFarmIQ Farm system uses a dual-microcontroller architecture for robust fa
      - IN1: Pin 24
      - IN2: Pin 25
      - EN: Pin 5 (PWM)
-   - Activation Logic:
-     ```cpp
-     if (nitrogen < 30) -> ON @ 90% power
-     if (nitrogen > 40) -> OFF
+   - API Control:
+     ```
+     Endpoint: /api/sensorCommand/fertilizer-pump
+     Commands:
+     - ON: Activate pump at default power (90%)
+     - OFF: Deactivate pump
+     - SPEED,value: Set pump power (0-100%)
      ```
 
 #### Feedback Devices
@@ -164,36 +179,62 @@ The EcoFarmIQ Farm system uses a dual-microcontroller architecture for robust fa
   - Baud Rate: 9600
   - Arduino TX → ESP32 RX (Pin 21)
   - Arduino RX → ESP32 TX (Pin 22)
-  - JSON data format
+  - JSON Data Format:
+    ```json
+    {
+        "moisture": float,
+        "temperature": float,
+        "waterLevel": float,
+        "nitrogen": int,
+        "phosphorus": int,
+        "potassium": int,
+        "ph": float,
+        "uvIndex": float
+    }
+    ```
+  - Command Format:
+    ```
+    CMD:LED,color,mode;BUZZER,time;WPUMP,state;FPUMP,state;
+    ```
 
 #### ESP32-Server Communication
 
-- **WiFi Configuration**
+- **API Endpoints**
+  - Sensor Data: `/api/sensorData`
+  - Water Pump: `/api/sensorCommand/water-pump`
+  - Fertilizer Pump: `/api/sensorCommand/fertilizer-pump`
+  - Alerts:
+    ```
+    GET /api/sensorCommand/temperature-high-alert
+    GET /api/sensorCommand/temperature-low-alert
+    GET /api/sensorCommand/moisture-high-alert
+    GET /api/sensorCommand/moisture-low-alert
+    GET /api/sensorCommand/water-level-alert
+    GET /api/sensorCommand/ph-high-alert
+    GET /api/sensorCommand/ph-low-alert
+    GET /api/sensorCommand/nitrogen-high-alert
+    GET /api/sensorCommand/nitrogen-low-alert
+    GET /api/sensorCommand/phosphorus-high-alert
+    GET /api/sensorCommand/phosphorus-low-alert
+    GET /api/sensorCommand/potassium-high-alert
+    GET /api/sensorCommand/potassium-low-alert
+    ```
 
-  - Auto-reconnect capability
-  - 20 retry attempts
-  - Status LED indication
+### 4. Control Logic
 
-- **Server Integration**
-  - Endpoint: `https://ecofarmiq-final.onrender.com/api/sensorData`
-  - POST requests every 5 seconds
-  - JSON payload format
+#### Server-Side Control
 
-### 4. Safety Features & Error Handling
+- Threshold analysis
+- Decision making
+- Command generation
+- Alert management
 
-#### System Protection
+#### Arduino-Side Control
 
-- 3-second startup delay
-- Water level monitoring
-- Pump overrun protection
-- Power loss detection
-
-#### Error Handling
-
-- Sensor initialization checks
-- Communication timeout handling
-- WiFi connection management
-- Data validation
+- Command execution
+- Hardware control
+- Safety checks
+- Status reporting
 
 ## Pin Configuration Summary
 
@@ -330,3 +371,53 @@ Serial Communication:
 - Soil sensors: Monthly
 - Water level: Weekly
 - pH sensors: Bi-weekly
+
+## API Integration
+
+### Available Endpoints
+
+1. **Sensor Data**
+
+   - `POST /api/sensorData`
+   - Accepts JSON sensor readings
+   - Returns control commands if needed
+
+2. **Direct Control**
+
+   - `GET /api/sensorCommand/water-pump`
+   - `GET /api/sensorCommand/fertilizer-pump`
+   - `GET /api/sensorCommand/buzzer`
+
+3. **Alert Endpoints**
+   ```
+   GET /api/sensorCommand/temperature-high-alert
+   GET /api/sensorCommand/temperature-low-alert
+   GET /api/sensorCommand/moisture-high-alert
+   GET /api/sensorCommand/moisture-low-alert
+   GET /api/sensorCommand/water-level-alert
+   GET /api/sensorCommand/ph-high-alert
+   GET /api/sensorCommand/ph-low-alert
+   GET /api/sensorCommand/nitrogen-high-alert
+   GET /api/sensorCommand/nitrogen-low-alert
+   GET /api/sensorCommand/phosphorus-high-alert
+   GET /api/sensorCommand/phosphorus-low-alert
+   GET /api/sensorCommand/potassium-high-alert
+   GET /api/sensorCommand/potassium-low-alert
+   ```
+
+### Response Format
+
+```json
+{
+    "success": boolean,
+    "led": {
+        "color": "red|green|blue",
+        "blink": boolean,
+        "on": boolean
+    },
+    "buzzer": {
+        "time": integer
+    },
+    "message": string
+}
+```

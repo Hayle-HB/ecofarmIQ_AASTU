@@ -14,28 +14,76 @@
 extern bool pump1State;
 extern bool pump2State;
 
-void controlWaterPump(float moisture, DateTime now) {
-  if (moisture < 20 && !pump1State) {
-    digitalWrite(MOTOR1_IN1, HIGH); digitalWrite(MOTOR1_IN2, LOW);
-    analogWrite(MOTOR1_EN, 90);
-    pump1State = true;
-    printEvent(now, "Water Pump ON (Moisture < 20%)");
-  } else if (moisture > 30 && pump1State) {
-    analogWrite(MOTOR1_EN, 0); digitalWrite(MOTOR1_IN1, LOW); digitalWrite(MOTOR1_IN2, LOW);
-    pump1State = false;
-    printEvent(now, "Water Pump OFF (Moisture > 30%)");
-  }
+void controlPump(PumpType pumpType, PumpAction action, int speed) {
+    int in1Pin, in2Pin, enPin;
+    bool* pumpState;
+    
+    // Select pump pins based on type
+    if (pumpType == WATER_PUMP) {
+        in1Pin = MOTOR1_IN1;
+        in2Pin = MOTOR1_IN2;
+        enPin = MOTOR1_EN;
+        pumpState = &pump1State;
+    } else {
+        in1Pin = MOTOR2_IN1;
+        in2Pin = MOTOR2_IN2;
+        enPin = MOTOR2_EN;
+        pumpState = &pump2State;
+    }
+
+    // Execute pump action
+    switch (action) {
+        case PUMP_ON:
+            digitalWrite(in1Pin, HIGH);
+            digitalWrite(in2Pin, LOW);
+            analogWrite(enPin, speed);
+            *pumpState = true;
+            break;
+
+        case PUMP_OFF:
+            analogWrite(enPin, 0);
+            digitalWrite(in1Pin, LOW);
+            digitalWrite(in2Pin, LOW);
+            *pumpState = false;
+            break;
+
+        case PUMP_SPEED:
+            if (*pumpState) {
+                analogWrite(enPin, speed);
+            }
+            break;
+    }
 }
 
-void controlFertilizerPump(int nitrogen, DateTime now) {
-  if (nitrogen < 30 && !pump2State) {
-    digitalWrite(MOTOR2_IN1, HIGH); digitalWrite(MOTOR2_IN2, LOW);
-    analogWrite(MOTOR2_EN, 90);
-    pump2State = true;
-    printEvent(now, "Fertilizer Pump ON (Nitrogen < 30)");
-  } else if (nitrogen > 40 && pump2State) {
-    analogWrite(MOTOR2_EN, 0); digitalWrite(MOTOR2_IN1, LOW); digitalWrite(MOTOR2_IN2, LOW);
-    pump2State = false;
-    printEvent(now, "Fertilizer Pump OFF (Nitrogen > 40)");
-  }
+// API command handlers
+void handleWaterPumpCommand(const char* command, const char* value) {
+    if (strcmp(command, "ON") == 0) {
+        controlPump(WATER_PUMP, PUMP_ON, 90);  // 90% power by default
+        printEvent(rtc.now(), "Water Pump ON via API");
+    }
+    else if (strcmp(command, "OFF") == 0) {
+        controlPump(WATER_PUMP, PUMP_OFF, 0);
+        printEvent(rtc.now(), "Water Pump OFF via API");
+    }
+    else if (strcmp(command, "SPEED") == 0) {
+        int speed = atoi(value);
+        controlPump(WATER_PUMP, PUMP_SPEED, speed);
+        printEvent(rtc.now(), "Water Pump speed changed via API");
+    }
+}
+
+void handleFertilizerPumpCommand(const char* command, const char* value) {
+    if (strcmp(command, "ON") == 0) {
+        controlPump(FERTILIZER_PUMP, PUMP_ON, 90);  // 90% power by default
+        printEvent(rtc.now(), "Fertilizer Pump ON via API");
+    }
+    else if (strcmp(command, "OFF") == 0) {
+        controlPump(FERTILIZER_PUMP, PUMP_OFF, 0);
+        printEvent(rtc.now(), "Fertilizer Pump OFF via API");
+    }
+    else if (strcmp(command, "SPEED") == 0) {
+        int speed = atoi(value);
+        controlPump(FERTILIZER_PUMP, PUMP_SPEED, speed);
+        printEvent(rtc.now(), "Fertilizer Pump speed changed via API");
+    }
 }
