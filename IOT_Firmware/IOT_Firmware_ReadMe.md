@@ -2,6 +2,8 @@
 
 ## System Architecture Overview
 
+### High-Level Architecture
+
 ```mermaid
 graph LR
     A[Sensors] --> B[Arduino Mega]
@@ -9,6 +11,67 @@ graph LR
     C --> D[WiFi]
     D --> E[Server]
     B --> F[Pumps/Actuators]
+```
+
+### Detailed Data Flow
+
+```mermaid
+graph TD
+    subgraph Sensors
+        A1[Modbus Sensors] --> |RS485| AM
+        A2[UV Sensor] --> |I2C| AM
+        A3[Water Level] --> |Analog| AM
+        A4[RTC Clock] --> |I2C| AM
+    end
+
+    subgraph Arduino Mega[Arduino Mega Controller]
+        AM[Main Controller] --> |Control| P1
+        AM --> |Control| P2
+        AM --> |Status| LCD
+        AM --> |Serial| ESP
+    end
+
+    subgraph Actuators
+        P1[Water Pump]
+        P2[Fertilizer Pump]
+        LCD[LCD Display]
+    end
+
+    subgraph ESP32[ESP32 WiFi Module]
+        ESP[ESP32] --> |HTTP| SRV
+    end
+
+    subgraph Server[Cloud Server]
+        SRV[EcoFarmIQ Server]
+    end
+```
+
+### Operation Sequence
+
+```mermaid
+sequenceDiagram
+    participant S as Sensors
+    participant A as Arduino
+    participant P as Pumps
+    participant E as ESP32
+    participant Srv as Server
+
+    Note over A: System Start
+    A->>S: Initialize Sensors
+    A->>P: Initialize Pumps
+    A->>E: Initialize Communication
+
+    loop Every 500ms
+        S->>A: Send Sensor Data
+        A->>A: Process Data
+        A->>P: Control Pumps
+        A->>E: Send JSON Data
+    end
+
+    loop Every 5s
+        E->>Srv: POST Sensor Data
+        Srv-->>E: Response
+    end
 ```
 
 The EcoFarmIQ Farm system uses a dual-microcontroller architecture for robust farm automation and monitoring:
