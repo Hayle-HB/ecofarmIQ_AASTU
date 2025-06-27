@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EcoFarmIQ API Documentation</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #f8fafc;
+        color: #222;
+        margin: 0;
+        padding: 2rem;
+      }
+      h1 {
+        color: #2e7d32;
+      }
+      .endpoint {
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(46, 125, 50, 0.07);
+        margin-bottom: 1.5rem;
+        padding: 1.5rem;
+      }
+      .method {
+        font-weight: bold;
+        color: #2e7d32;
+      }
+      code {
+        background: #e8f5e9;
+        padding: 2px 6px;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>EcoFarmIQ API Documentation</h1>
+    <div class="endpoint">
+      <div class="method">GET</div>
+      <code>/api/sensorData</code>
+      <div>Get all sensor data entries.</div>
+    </div>
+    <div class="endpoint">
+      <div class="method">POST</div>
+      <code>/api/sensorData</code>
+      <div>
+        Add a new sensor data entry.<br />
+        <b>Body:</b>
+        <pre>
+{
+  "moisture": 91.4,
+  "temp": 77.2,
+  "ph": 6.30,
+  "ec": 607.00,
+  "n": 69,
+  "p": 30,
+  "k": 42,
+  "uv": 0.04,
+  "waterLevel": 45.0
+}</pre
+        >
+      </div>
+    </div>
+    <div class="endpoint">
+      <div class="method">GET</div>
+      <code>/api/sensorData/:id</code>
+      <div>Get a single sensor data entry by ID.</div>
+    </div>
+    <div class="endpoint">
+      <div class="method">DELETE</div>
+      <code>/api/sensorData/:id</code>
+      <div>Delete a sensor data entry by ID.</div>
+    </div>
+    <div class="endpoint">
+      <div class="method">GET</div>
+      <code>/events</code>
+      <div>Subscribe to real-time sensor data updates (SSE).</div>
+    </div>
+    <div class="endpoint">
+      <div class="method">GET</div>
+      <code>/api/commands/buzzer</code>
+      <div>
+        Turn on the buzzer for 3 seconds.<br />
+        <b>Response:</b>
+        <pre>
+{
+  "success": true,
+  "time": 3
+}</pre
+        >
+      </div>
+    </div>
+    <div class="endpoint">
+      <div class="method">GET</div>
+      <code>/api/commands/water-pump</code>
+      <div>
+        Turn on the water pump and green LED for 3 seconds.<br />
+        <b>Response:</b>
+        <pre>
+{
+  "success": true,
+  "time": 3,
+  "led": { "color": "green", "success": true }
+}</pre
+        >
+      </div>
+    </div>
+    <div class="endpoint">
+      <div class="method">GET</div>
+      <code>/api/commands/fertilizer-pump</code>
+      <div>
+        Turn on the fertilizer pump and blue LED for 3 seconds.<br />
+        <b>Response:</b>
+        <pre>
+{
+  "success": true,
+  "time": 3,
+  "led": { "color": "blue", "success": true }
+}</pre
+        >
+      </div>
+    </div>
+    <div class="endpoint">
+      <div class="method">POST</div>
+      <code>/api/commands/led</code>
+      <div>
+        Turn on an LED of a specific color.<br />
+        <b>Body:</b> <code>{ "color": "red" }</code><br />
+        <b>Response:</b>
+        <pre>
+{
+  "success": true,
+  "color": "red"
+}</pre
+        >
+      </div>
+    </div>
+    <div class="endpoint">
+      <div class="method">GET</div>
+      <code>/api/commands/temp-uv-alert</code>
+      <div>
+        Trigger buzzer and red LED for temperature/UV alert.<br />
+        <b>Response:</b>
+        <pre>
+{
+  "buzzer": { "success": true, "time": 3 },
+  "led": { "success": true, "color": "red" }
+}</pre
+        >
+      </div>
+    </div>
+    <div class="endpoint">
+      <div class="method">GET</div>
+      <code>/api/commands/water-level-alert</code>
+      <div>
+        Trigger water level red LED alert.<br />
+        <b>Response:</b>
+        <pre>
+{
+  "led": { "success": true, "color": "red" },
+  "success": true,
+  "time": 3
+}</pre
+        >
+      </div>
+    </div>
+    <!-- High Alert Endpoints -->
+    <div class="endpoint">
+      <div class="method">GET</div>
+      <code>/api/commands/temperature-high-alert</code>
+      <div>
+        Trigger critical temperature alert (red LED blinks, buzzer beeps).<br />
+        <b>Response:</b>
+        <pre>
+{
+  "buzzer": { "success": true, "time": 3 },
+  "led": { "success": true, "color": "red", "blink": true },
+  "message": "Critical temperature"
+}</pre
+        >
+      </div>
+    </div>
+    <div class="endpoint">
+      <div class="method">GET</div>
+      <code>/api/commands/moisture-high-alert</code>
+      <div>
+        Trigger critical moisture alert (red LED blinks, buzzer beeps).<br />
+        <b>Response:</b>
+        <pre>
+{
+  "buzzer": { "success": true, "time": 3 },
+  "led": { "success": true, "color": "red", "blink": true },
+  "message": "Critical moisture"
+}</pre
+        >
+      </div>
+    </div>
+    <div class="endpoint">
+      <div class="method">GET</div>
+      <code>/api/commands/water-level-high-alert</code>
+      <div>
+        Trigger critical water level alert (red LED blinks, buzzer beeps).<br />
+        <b>Response:</b>
+        <pre>
+{
+  "buzzer": { "success": true, "time": 3 },
+  "led": { "success": true, "color": "red", "blink": true },
+  "message": "Critical water level"
+}</pre
+        >
+      </div>
+    </div>
+    <div class="endpoint">
+      <div class="method">GET</div>
+      <code>/api/commands/ph-high-alert</code>
+      <div>
+        Trigger critical pH alert (red LED blinks, buzzer beeps).<br />
+        <b>Response:</b>
+        <pre>
+{
+  "buzzer": { "success": true, "time": 3 },
+  "led": { "success": true, "color": "red", "blink": true },
+  "message": "Critical pH"
+}</pre
+        >
+      </div>
+    </div>
+    <div class="endpoint">
+      <div class="method">GET</div>
+      <code>/api/commands/nitrogen-high-alert</code>
+      <div>
+        Trigger critical nitrogen alert (red LED blinks, buzzer beeps).<br />
+        <b>Response:</b>
+        <pre>
+{
+  "buzzer": { "success": true, "time": 3 },
+  "led": { "success": true, "color": "red", "blink": true },
+  "message": "Critical nitrogen"
+}</pre
+        >
+      </div>
+    </div>
+    <div class="endpoint">
+      <div class="method">GET</div>
+      <code>/api/commands/phosphorus-high-alert</code>
+      <div>
+        Trigger critical phosphorus alert (red LED blinks, buzzer beeps).<br />
+        <b>Response:</b>
+        <pre>
+{
+  "buzzer": { "success": true, "time": 3 },
+  "led": { "success": true, "color": "red", "blink": true },
+  "message": "Critical phosphorus"
+}</pre
+        >
+      </div>
+    </div>
+    <div class="endpoint">
+      <div class="method">GET</div>
+      <code>/api/commands/potassium-high-alert</code>
+      <div>
+        Trigger critical potassium alert (red LED blinks, buzzer beeps).<br />
+        <b>Response:</b>
+        <pre>
+{
+  "buzzer": { "success": true, "time": 3 },
+  "led": { "success": true, "color": "red", "blink": true },
+  "message": "Critical potassium"
+}</pre
+        >
+      </div>
+    </div>
+    <!-- Low Alert Endpoints -->
+    <div class="endpoint">
+      <div class="method">GET</div>
+      <code>/api/commands/temperature-low-alert</code>
+      <div>
+        Trigger low temperature alert (red LED blinks, buzzer beeps).<br />
+        <b>Response:</b>
+        <pre>
+{
+  "buzzer": { "success": true, "time": 3 },
+  "led": { "success": true, "color": "red", "blink": true },
+  "message": "Low temperature"
+}</pre
+        >
+      </div>
+    </div>
+    <div class="endpoint">
+      <div class="method">GET</div>
+      <code>/api/commands/moisture-low-alert</code>
+      <div>
+        Trigger low moisture alert (red LED blinks, buzzer beeps).<br />
+        <b>Response:</b>
+        <pre>
+{
+  "buzzer": { "success": true, "time": 3 },
+  "led": { "success": true, "color": "red", "blink": true },
+  "message": "Low moisture"
+}</pre
+        >
+      </div>
+    </div>
+    <div class="endpoint">
+      <div class="method">GET</div>
+      <code>/api/commands/water-level-low-alert</code>
+      <div>
+        Trigger low water level alert (red LED blinks, buzzer beeps).<br />
+        <b>Response:</b>
+        <pre>
+{
+  "buzzer": { "success": true, "time": 3 },
+  "led": { "success": true, "color": "red", "blink": true },
+  "message": "Low water level"
+}</pre
+        >
+      </div>
+    </div>
+    <div class="endpoint">
+      <div class="method">GET</div>
+      <code>/api/commands/ph-low-alert</code>
+      <div>
+        Trigger low pH alert (red LED blinks, buzzer beeps).<br />
+        <b>Response:</b>
+        <pre>
+{
+  "buzzer": { "success": true, "time": 3 },
+  "led": { "success": true, "color": "red", "blink": true },
+  "message": "Low pH"
+}</pre
+        >
+      </div>
+    </div>
+    <div class="endpoint">
+      <div class="method">GET</div>
+      <code>/api/commands/nitrogen-low-alert</code>
+      <div>
+        Trigger low nitrogen alert (red LED blinks, buzzer beeps).<br />
+        <b>Response:</b>
+        <pre>
+{
+  "buzzer": { "success": true, "time": 3 },
+  "led": { "success": true, "color": "red", "blink": true },
+  "message": "Low nitrogen"
+}</pre
+        >
+      </div>
+    </div>
+    <div class="endpoint">
+      <div class="method">GET</div>
+      <code>/api/commands/phosphorus-low-alert</code>
+      <div>
+        Trigger low phosphorus alert (red LED blinks, buzzer beeps).<br />
+        <b>Response:</b>
+        <pre>
+{
+  "buzzer": { "success": true, "time": 3 },
+  "led": { "success": true, "color": "red", "blink": true },
+  "message": "Low phosphorus"
+}</pre
+        >
+      </div>
+    </div>
+    <div class="endpoint">
+      <div class="method">GET</div>
+      <code>/api/commands/potassium-low-alert</code>
+      <div>
+        Trigger low potassium alert (red LED blinks, buzzer beeps).<br />
+        <b>Response:</b>
+        <pre>
+{
+  "buzzer": { "success": true, "time": 3 },
+  "led": { "success": true, "color": "red", "blink": true },
+  "message": "Low potassium"
+}</pre
+        >
+      </div>
+    </div>
+  </body>
+</html>

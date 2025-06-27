@@ -1,0 +1,37 @@
+{
+  "moisture": {
+    "low": "15",
+    "mid": "15 - 25",
+    "high": "25"
+  },
+  "temperature": {
+    "low": "15",
+    "mid": "15 - 25",
+    "high": "25"
+  },
+  "ph": {
+    "low": "5.0",
+    "mid": "5.0 - 6.4",
+    "high": "6.4"
+  },
+  "nitrogen": {
+    "low": "90",
+    "mid": "90 - 176",
+    "high": "176"
+  },
+  "phosphorus": {
+    "low": "20",
+    "mid": "20 - 30",
+    "high": "30"
+  },
+  "potassium": {
+    "low": "15",
+    "mid": "15 - 30",
+    "high": "30"
+  },
+  "waterLevel": {
+    "low": "50",
+    "mid": "50 - 70",
+    "high": "70"
+  }
+}

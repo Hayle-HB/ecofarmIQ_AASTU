@@ -1,0 +1,65 @@
+{
+  "maize": {
+    "n": 82,
+    "p": 16,
+    "k": 44,
+    "temperature": 22.5,
+    "humidity": 70,
+    "ph": 6.3,
+    "rainfall": 800
+  },
+  "barley": {
+    "n": 85,
+    "p": 22,
+    "k": 25,
+    "temperature": 17,
+    "humidity": 65,
+    "ph": 6.5,
+    "rainfall": 600
+  },
+  "teff": {
+    "n": 85,
+    "p": 26,
+    "k": 40,
+    "temperature": 21,
+    "humidity": 65,
+    "ph": 6.3,
+    "rainfall": 700
+  },
+  "wheat": {
+    "n": 115,
+    "p": 30,
+    "k": 35,
+    "temperature": 17.5,
+    "humidity": 65,
+    "ph": 6.5,
+    "rainfall": 700
+  },
+  "bean": {
+    "n": 40,
+    "p": 20,
+    "k": 25,
+    "temperature": 22.5,
+    "humidity": 75,
+    "ph": 6.2,
+    "rainfall": 750
+  },
+  "pulses_oilseeds": {
+    "n": 50,
+    "p": 25,
+    "k": 30,
+    "temperature": 22,
+    "humidity": 65,
+    "ph": 6.5,
+    "rainfall": 700
+  },
+  "sorghum": {
+    "n": 60,
+    "p": 25,
+    "k": 25,
+    "temperature": 23,
+    "humidity": 60,
+    "ph": 6.5,
+    "rainfall": 550
+  }
+}

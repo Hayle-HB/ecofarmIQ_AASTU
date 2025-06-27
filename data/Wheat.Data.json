@@ -1,0 +1,56 @@
+{
+  "soil": {
+    "pH": {
+      "low": 5.5,
+      "medium": 6.5,
+      "high": 7.5
+    },
+    "NPK (N-P-K in kg/ha)": {
+      "low": "80-40-40",
+      "medium": "120-60-60",
+      "high": "225-100-100"
+    },
+    "electricConductivity (dS/m)": {
+      "low": 0.1,
+      "medium": 1.5,
+      "high": 3.0
+    },
+    "soilTemperature (°C)": {
+      "low": 10,
+      "medium": 18,
+      "high": 25
+    },
+    "soilMoisture (%)": {
+      "low": 15,
+      "medium": 50,
+      "high": 80
+    }
+  },
+  "climate": {
+    "airTemperature (°C)": {
+      "low": 4,
+      "medium": 20,
+      "high": 26
+    },
+    "relativeHumidity (%)": {
+      "low": 40,
+      "medium": 55,
+      "high": 70
+    },
+    "UV (kJ/m²/day)": {
+      "low": 3,
+      "medium": 5,
+      "high": 7
+    },
+    "sunlightHours/day": {
+      "low": 6,
+      "medium": 8,
+      "high": 12
+    },
+    "rainfall (mm/year)": {
+      "low": 250,
+      "medium": 500,
+      "high": 1500
+    }
+  }
+}

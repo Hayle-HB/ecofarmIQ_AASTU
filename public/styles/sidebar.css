@@ -1,0 +1,77 @@
+.sidebar {
+  width: 240px;
+  background: #2e7d32;
+  color: #fff;
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 2px 0 12px rgba(46, 125, 50, 0.08);
+  z-index: 100;
+}
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 2rem 1.5rem 1rem 1.5rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+.sidebar-logo img {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: #fff;
+}
+.sidebar-nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.sidebar-nav li {
+  margin: 1.2rem 0;
+}
+.sidebar-nav a {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  color: #fff;
+  font-size: 1.1rem;
+  padding: 0.7rem 2rem;
+  border-radius: 8px 0 0 8px;
+  transition: background 0.2s;
+}
+.sidebar-nav a:hover,
+.sidebar-nav a.active {
+  background: #388e3c;
+}
+.sidebar-user {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 1.5rem;
+  background: #388e3c;
+  border-radius: 0 0 12px 0;
+}
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+}
+.user-info {
+  display: flex;
+  flex-direction: column;
+}
+.user-name {
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+.user-role {
+  font-size: 0.95rem;
+  color: #c8e6c9;
+}

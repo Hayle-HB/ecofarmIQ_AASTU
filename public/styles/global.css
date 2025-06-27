@@ -1,0 +1,25 @@
+body {
+  font-family: "Roboto", Arial, sans-serif;
+  background: #f6fbf7;
+  margin: 0;
+  padding: 0;
+  color: #222;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+a:hover {
+  color: #388e3c;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
