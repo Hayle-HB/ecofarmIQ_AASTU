@@ -12,8 +12,9 @@ EcoFarmIQ is a comprehensive smart agriculture management system that combines I
 graph LR
     A[Sensors] --> B[Arduino Mega]
     B --> C[ESP32]
-    C --> D[WiFi]
-    D --> E[Server]
+    C --> |HTTP| D[Server API]
+    D --> |Commands| C
+    C --> B
     B --> F[Pumps/Actuators]
 ```
 
@@ -29,24 +30,30 @@ graph TD
     end
 
     subgraph Arduino Mega[Arduino Mega Controller]
-        AM[Main Controller] --> |Control| P1
-        AM --> |Control| P2
-        AM --> |Status| LCD
-        AM --> |Serial| ESP
+        AM[Main Controller] --> |JSON| ESP
+        AM --> |Execute Commands| ACT
     end
 
-    subgraph Actuators
-        P1[Water Pump]
-        P2[Fertilizer Pump]
+    subgraph Actuators[Actuators]
+        subgraph ACT[Control Systems]
+            P1[Water Pump]
+            P2[Fertilizer Pump]
+            LED[RGB LED]
+            BUZ[Buzzer]
+        end
         LCD[LCD Display]
     end
 
     subgraph ESP32[ESP32 WiFi Module]
-        ESP[ESP32] --> |HTTP| SRV
+        ESP[ESP32] --> |HTTP POST| API
+        API[Server API] --> |Command Response| ESP
     end
 
     subgraph Server[Cloud Server]
-        SRV[EcoFarmIQ Server]
+        API --> CTRL[Control Logic]
+        CTRL --> |Threshold Analysis| CTRL
+        CTRL --> |Command Generation| API
+        CTRL --> |ML Integration| ML[Machine Learning]
     end
 ```
 
@@ -54,17 +61,20 @@ graph TD
 
 ### 1. Smart Irrigation System
 
-- **Automated Water Management**
+- **API-Driven Water Management**
+  - Server-controlled thresholds
   - Real-time soil moisture monitoring
   - Intelligent watering schedules
+  - Dynamic pump speed control
   - Water usage optimization
   - Reservoir level tracking
 
 ### 2. Fertilization Control
 
-- **Precision Nutrient Management**
-  - NPK level monitoring
+- **API-Driven Nutrient Management**
+  - Server-controlled NPK thresholds
   - Automated fertilizer dispensing
+  - Variable rate application
   - Custom nutrient profiles
   - Historical tracking
 
@@ -131,7 +141,9 @@ graph TD
 - **Core Functions**
   - RESTful API endpoints
   - Real-time event handling
-  - Data processing
+  - Threshold management
+  - Control logic processing
+  - Data validation
   - Authentication system
 
 #### Machine Learning (Python)
@@ -142,21 +154,90 @@ graph TD
   - Weather analysis
   - Soil health assessment
 
-### 3. Communication Protocols
+### 3. Communication System
 
-#### Hardware Level
+#### Command Protocol
 
-- RS485 (Modbus)
-- I2C
-- Serial Communication
-- WiFi (ESP32)
+- **JSON Data Format (Arduino to ESP32)**
 
-#### Software Level
+  ```json
+  {
+    "moisture": float,
+    "temperature": float,
+    "waterLevel": float,
+    "nitrogen": int,
+    "phosphorus": int,
+    "potassium": int,
+    "ph": float,
+    "uvIndex": float
+  }
+  ```
 
-- HTTP/HTTPS
-- WebSocket
-- JSON Data Format
-- REST API
+- **Command Format (ESP32 to Arduino)**
+  ```
+  CMD:LED,color,mode;BUZZER,time;WPUMP,state;FPUMP,state;
+  ```
+
+#### API Endpoints
+
+1. **Sensor Data**
+
+   ```http
+   POST /api/sensorData
+   Content-Type: application/json
+
+   {
+     "moisture": 45.5,
+     "temperature": 25.2,
+     "waterLevel": 80,
+     "nitrogen": 35,
+     "phosphorus": 40,
+     "potassium": 45,
+     "ph": 6.8,
+     "uvIndex": 5.2
+   }
+   ```
+
+2. **Control Commands**
+
+   ```http
+   GET /api/sensorCommand/water-pump
+   Response:
+   {
+     "success": true,
+     "command": "ON",
+     "speed": 90,
+     "message": "Activating water pump"
+   }
+   ```
+
+3. **Alert Endpoints**
+   ```http
+   GET /api/sensorCommand/moisture-high-alert
+   GET /api/sensorCommand/moisture-low-alert
+   GET /api/sensorCommand/nitrogen-high-alert
+   GET /api/sensorCommand/nitrogen-low-alert
+   [... other alert endpoints]
+   ```
+
+### 4. Control Logic
+
+#### Server-Side Processing
+
+- Threshold analysis
+- Decision making
+- Command generation
+- Alert management
+- Historical data analysis
+- ML model integration
+
+#### Hardware-Side Execution
+
+- Command parsing
+- Actuator control
+- Safety checks
+- Status reporting
+- Error handling
 
 ## Installation & Setup
 
@@ -202,17 +283,17 @@ npm run dev
 ### 1. Sensor Data Endpoints
 
 ```javascript
-GET / api / sensorData; // Get latest readings
-POST / api / sensorData; // Submit new readings
+POST / api / sensorData; // Submit sensor readings
+GET / api / sensorData / latest; // Get latest readings
 GET / api / sensorData / history; // Get historical data
 ```
 
 ### 2. Control Endpoints
 
 ```javascript
-POST / api / control / pump; // Control water pump
-POST / api / control / fertilizer; // Control fertilizer
-GET / api / control / status; // Get system status
+GET / api / sensorCommand / water - pump; // Water pump control
+GET / api / sensorCommand / fertilizer - pump; // Fertilizer control
+GET / api / sensorCommand / buzzer; // Buzzer control
 ```
 
 ### 3. Analysis Endpoints
@@ -221,6 +302,23 @@ GET / api / control / status; // Get system status
 GET / api / analysis / crop; // Get crop recommendations
 GET / api / analysis / weather; // Get weather analysis
 GET / api / analysis / soil; // Get soil health report
+```
+
+### 4. Response Format
+
+```json
+{
+    "success": boolean,
+    "led": {
+        "color": "red|green|blue",
+        "blink": boolean,
+        "on": boolean
+    },
+    "buzzer": {
+        "time": integer
+    },
+    "message": string
+}
 ```
 
 ## System Monitoring
@@ -328,4 +426,3 @@ For support and queries:
 ---
 
 © 2025 EcoFarmIQ. All Rights Reserved.
- 
