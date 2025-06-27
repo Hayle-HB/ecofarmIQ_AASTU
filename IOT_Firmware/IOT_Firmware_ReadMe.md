@@ -187,7 +187,7 @@ The EcoFarmIQ Farm system uses a dual-microcontroller architecture with server-s
         "waterLevel": float,
         "nitrogen": int,
         "phosphorus": int,
-        "potassium": int,
+        "potassium": int, 
         "ph": float,
         "uvIndex": float
     }
