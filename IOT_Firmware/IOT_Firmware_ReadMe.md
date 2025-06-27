@@ -89,6 +89,184 @@ The EcoFarmIQ Farm system uses a dual-microcontroller architecture with server-s
 2. **ESP32**: WiFi communication and API interaction
 3. **Cloud Server**: Control logic and decision making
 
+## Hardware Design
+
+### Component Layout
+
+```mermaid
+graph TD
+    subgraph Power Supply
+        PS[24V Power Supply] --> DC1[DC-DC 12V]
+        PS --> DC2[DC-DC 5V]
+        DC1 --> Motors
+        DC2 --> Logic
+    end
+
+    subgraph Logic[Logic Components]
+        AM[Arduino Mega]
+        ESP[ESP32 Module]
+        RTC[RTC Module]
+        LCD[LCD Display]
+    end
+
+    subgraph Sensors
+        NPK[NPK Sensor]
+        Moisture[Moisture Sensor]
+        UV[UV Sensor]
+        WL[Water Level]
+    end
+
+    subgraph Motors[Motor Control]
+        L298N[L298N Driver]
+        WP[Water Pump]
+        FP[Fertilizer Pump]
+    end
+
+    subgraph Communication
+        RS485[RS485 Module]
+        I2C[I2C Bus]
+    end
+```
+
+### Wiring Best Practices
+
+1. **Power Distribution**
+
+   - Use thick gauge wires (14-16 AWG) for 24V power lines
+   - Implement proper grounding scheme
+   - Add decoupling capacitors near ICs
+   - Use separate power rails for motors and logic
+
+2. **Signal Integrity**
+
+   - Keep signal wires away from power lines
+   - Use twisted pairs for differential signals
+   - Shield sensitive analog signals
+   - Implement pull-up/pull-down resistors where needed
+
+3. **Motor Control**
+   - Use snubber diodes across motor terminals
+   - Implement emergency stop circuit
+   - Add current sensing for motor protection
+   - Use shielded cables for motor connections
+
+### PCB Design Guidelines
+
+1. **Board Layout**
+
+   - 4-layer board recommended
+     - Layer 1: Signal and components
+     - Layer 2: Ground plane
+     - Layer 3: Power planes
+     - Layer 4: Signal and high-current traces
+   - Separate analog and digital grounds
+   - Use ground pour on all layers
+   - Place bypass capacitors close to ICs
+
+2. **Component Placement**
+   - Group related components together
+   - Keep sensitive components away from noise sources
+   - Place connectors at board edges
+   - Add mounting holes at corners
+
+### Protection Circuits
+
+```mermaid
+graph LR
+    subgraph Input Protection
+        F1[Fuse] --> TVS1[TVS Diode]
+        TVS1 --> REG[Voltage Regulator]
+    end
+
+    subgraph Motor Protection
+        OC[Overcurrent] --> TH[Thermal]
+        TH --> RV[Reverse Voltage]
+    end
+
+    subgraph Signal Protection
+        ESD[ESD Diodes] --> RF[RF Filter]
+        RF --> ISO[Isolation]
+    end
+```
+
+### Connector Specifications
+
+| Connection Type | Connector      | Wire Gauge | Notes               |
+| --------------- | -------------- | ---------- | ------------------- |
+| Power Input     | XT60           | 14 AWG     | Polarized connector |
+| Motor Output    | Terminal Block | 16 AWG     | Screw terminal      |
+| Sensors         | JST-XH         | 22 AWG     | Locking connector   |
+| Communication   | Terminal Block | 22 AWG     | RS485 connections   |
+| Programming     | Header Pins    | 24 AWG     | ISP/UART headers    |
+
+### Environmental Considerations
+
+1. **Enclosure Design**
+
+   - IP65 rated enclosure
+   - Gore vent for pressure equalization
+   - Cable glands for all external connections
+   - Cooling considerations
+     - Ventilation holes with filters
+     - Heat sinks on power components
+     - Temperature monitoring
+
+2. **EMI/EMC Protection**
+   - Ferrite beads on power lines
+   - EMI shields over sensitive circuits
+   - Proper grounding scheme
+   - Filter capacitors on power rails
+
+### Assembly Guidelines
+
+1. **Component Assembly**
+
+   - Use lead-free solder
+   - Apply conformal coating
+   - Heat shrink on all wire connections
+   - Label all connectors and cables
+
+2. **Quality Control**
+   - Visual inspection points
+   - Electrical testing procedures
+   - Burn-in testing requirements
+   - Calibration procedures
+
+### Bill of Materials (Critical Components)
+
+| Component    | Specification  | Quantity | Notes                 |
+| ------------ | -------------- | -------- | --------------------- |
+| Power Supply | 24V, 10A       | 1        | Mean Well type        |
+| Arduino Mega | ATmega2560     | 1        | Original Arduino      |
+| ESP32        | NodeMCU        | 1        | With external antenna |
+| L298N        | Dual H-Bridge  | 2        | Heat sink required    |
+| RS485 Module | MAX485         | 1        | With isolation        |
+| NPK Sensor   | RS485 Protocol | 1        | Industrial grade      |
+| LCD Display  | 20x4 I2C       | 1        | With backlight        |
+| Enclosure    | 400x300x150mm  | 1        | IP65 rated            |
+
+### Hardware Testing Procedures
+
+1. **Power System Test**
+
+   - Input voltage range test
+   - Regulation efficiency
+   - Ripple measurement
+   - Load testing
+
+2. **Signal Testing**
+
+   - Communication bus integrity
+   - Sensor calibration
+   - Motor control accuracy
+   - Protection circuit verification
+
+3. **Environmental Testing**
+   - Temperature cycle test
+   - Humidity resistance
+   - Vibration tolerance
+   - Water resistance
+
 ## Detailed Component Breakdown
 
 ### 1. Sensors & Input Devices
