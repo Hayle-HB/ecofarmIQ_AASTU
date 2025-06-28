@@ -2,7 +2,7 @@
 
 ## Overview
 
-EcoFarmIQ is a comprehensive smart agriculture management system that combines IoT technology, machine learning, and real-time monitoring to optimize farm operations. The system provides automated irrigation, fertilization, and environmental monitoring while offering insights through an intuitive web interface.
+EcoFarmIQ is a comprehensive smart agriculture management system that combines IoT technology, machine learning, and real-time monitoring to optimize crop selection and farm operations. The system provides intelligent crop recommendations, automated irrigation, and environmental monitoring, all accessible through an intuitive web interface.
 
 ### System Architecture
 
