@@ -1,4 +1,4 @@
-# EcoFarmIQ - Smart Agriculture Management System
+# EcoFarmIQ - AI Powered crop Recommendation and Farm Monitoring System
 
 ## Overview
 
