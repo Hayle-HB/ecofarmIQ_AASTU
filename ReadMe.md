@@ -5,8 +5,9 @@
 EcoFarmIQ is a comprehensive smart agriculture management system that combines IoT technology, machine learning, and real-time monitoring to optimize crop selection and farm operations. The system provides intelligent crop recommendations, automated irrigation, and environmental monitoring, all accessible through an intuitive web interface.
 
 # [ecofarmiq.vercel.com](https://ecofarmiq.vercel.app) (Using Mock Data only)
-# [[ecofarmiq.vercel.com](https://ecofarm-iq-final.vercel.app)] (for IOT prototype  IOT  only)
+# [[ecofarmiq.vercel.com](https://ecofarm-iq-final.vercel.app)] (for IOT prototype  IOT (minimum  features)
 # - Documentation: [docs.ecofarmiq.com](https://docs.ecofarmiq.proghubs.com)
+# - 
 ### System Architecture
 
 #### High-Level Overview
